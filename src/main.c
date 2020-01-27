@@ -22,15 +22,16 @@
 //----------------------GLOBAL VARS && CONSTANTS------------------------------------------------------------
 #define width 320
 
-volatile uint32_t microseconds;
+volatile uint8_t DMA_BUFFER[6]; //6bytes of data to be sent
 
+volatile uint32_t microseconds;
 
 volatile bool status = 0; //used to keep step status
 bool isCalibrated = 0;
 bool dir = 0;
-volatile unsigned int current_steps = 0;
 
-unsigned int target_steps = 300; //max: 1200 current_steps == 180*
+volatile unsigned int current_steps = 0;
+volatile unsigned int target_steps = 300; //max: 1200 current_steps == 180*
 
 //as received from the uart
 volatile uint16_t x_center;
@@ -49,7 +50,7 @@ uint8_t input_buffer_index = 0;
 int main(){
 //setup
 
-	init_TIM14();
+	init_TIM14(); //used for motor stepping
 	init_GPIOA();
 	init_GPIOB();
 	init_UART1();
@@ -64,7 +65,7 @@ int main(){
 		unsigned int steps = current_steps;
 
 	/*receive x_center from jetson here*/
-
+		update_target_steps(x_center);
 		update_motor_control(steps);
 
 
@@ -115,16 +116,17 @@ void init_TIM14(void){ /*this timer used for motor control*/
 
 	//freq = 48000000/psc/arr hz
 	TIM14->PSC = 999; //scale frequency
-	TIM14->ARR = 23999; //set value to count up to
+	TIM14->ARR = 499; //set value to count up to
 
 	TIM14->DIER |= TIM_DIER_UIE; // enable update interrupt event
 	TIM14->CR1 |= TIM_CR1_CEN; //start timer
 
+	NVIC_SetPriority(TIM15_IRQn, 2);
 	NVIC_EnableIRQ(TIM14_IRQn);
 
 }
 
-void init_TIM15(void){ /*this timer used for 90Hz to send angle & timestamp data back to the jetson*/
+void init_TIM15(void){ /*this timer used at 90Hz to send angle & timestamp data back to the jetson*/
 	RCC->APB2ENR |= RCC_APB2ENR_TIM15EN;
 
 	//freq = 48000000/psc/arr = 90hz
@@ -140,7 +142,7 @@ void init_TIM15(void){ /*this timer used for 90Hz to send angle & timestamp data
 
 }
 
-void init_TIM16(){
+void init_TIM16(){ //used for keeping time
 	RCC->APB2ENR |= RCC_APB2ENR_TIM16EN;
 
 	//freq = 48000000/psc/arr = 1MHz (1 usecond period)
@@ -160,7 +162,7 @@ void init_UART1(void){
 	 *
 	 **/
 
-	/*http://www.sasabremec.com/?page_id=306
+	/*
 	 *https://community.st.com/s/question/0D50X00009XkZ55SAF/uart-example-code-for-stm32f0
 	 *https://www.st.com/content/ccc/resource/technical/document/user_manual/2f/77/25/0f/5c/38/48/80/DM00122015.pdf/files/DM00122015.pdf/jcr:content/translations/en.DM00122015.pdf
 	 *https://community.st.com/s/question/0D50X00009XkaKtSAJ/recieve-more-then-1-byte-over-usart
@@ -189,7 +191,12 @@ void init_UART1(void){
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
 //configure interrupt for uart
-	NVIC_EnableIRQ(USART1_IRQn);
+	//NVIC_EnableIRQ(USART1_IRQn);
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
 //enable uart
 	USART_Init(USART1, &USART_InitStructure);
@@ -197,9 +204,29 @@ void init_UART1(void){
 	//USART_ITConfig(USART1, USART_IT_TXE, ENABLE); //interrupt for transmit empty
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//interrupt for receive not empty
 
+//configure dma
+	init_DMA();
+	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
+	DMA_ITConfig(DMA1_Channel1, DMA_IT_TC, ENABLE);
+	DMA_Cmd(DMA1_Channel1, ENABLE);
+	//@TODO: IRQ Handler for dma
 }
 
+void init_DMA(void){
+	//configure the dma
+	DMA_InitTypeDef DMA_InitStructure;
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST; //source
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&DMA_BUFFER; //6 bytes global buffer
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->TDR);
+	DMA_InitStructure.DMA_BufferSize = 6;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 
+	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+
+}
 
 
 
@@ -226,7 +253,7 @@ void update_motor_control(unsigned int steps){
 	}
 	else{
 		if(error>134){ //20 degrees: fastest
-			arr = 12;//47;//479; //100 hz	//@TODO: tune eqn
+			arr = 47;//47;//479; //100 hz	//@TODO: tune eqn
 		}
 		else{
 			arr = (int)(8000/error) - 1; //@TODO: tune eqn
@@ -234,31 +261,50 @@ void update_motor_control(unsigned int steps){
 	}
 	TIM14->ARR = arr; //set value to count up to
 
-	//set direction
+	//set direction @TODO: direction is opposite
 	if(steps<target_steps){
 		dir = 0;
-		GPIOB->ODR |= GPIO_ODR_1;
+		//GPIOB->ODR |= GPIO_ODR_1;
+		GPIOB->ODR &= ~GPIO_ODR_1;
 	}
 	else{
 		dir = 1;
-		GPIOB->ODR &= ~GPIO_ODR_1;
+		GPIOB->ODR |= GPIO_ODR_1;
+		//GPIOB->ODR &= ~GPIO_ODR_1;
 	}
 
 }
 
-void update_target_steps(uint8_t x_center){
-	uint8_t x_error = abs(x_center-width/2);
+void update_target_steps(uint16_t x_center){
+	int dead_center = width/2;
+	uint16_t x_error = abs(x_center-dead_center);
 	uint16_t target;
-	if(x_error<25){
-		target = current_steps + 5*x_error; //@TODO: tune eqn
+	unsigned int steps = current_steps;
+
+	if(x_error<25){ //small error
+		if(x_center>dead_center){
+			target = steps + 2*x_error; //@TODO: tune eqn
+		}
+		else{
+			target = steps - 2*x_error; //@TODO: tune eqn
+		}
 	}
-	else{
-		target = current_steps + 5*x_error; //@TODO: tune eqn
+	else{ //large error
+		if(x_center>dead_center){
+			target = steps + 3*x_error; //@TODO: tune eqn
+		}
+		else{
+			target = steps - 3*x_error; //@TODO: tune eqn
+		}
 	}
 
+	//check target is within bounds
 	if(target<1200 && target>0){
 		target_steps = target;
 	}//else invalid target
+	else{
+		target = 0;
+	}
 
 }
 
@@ -286,7 +332,7 @@ void TIM14_IRQHandler(void){
 
 }
 
-void TIM15_IRQHandler(){
+void TIM15_IRQHandler(){ //@TODO
 /* data needs to be sent on this interrupt
  * angle(current_steps) as 2 bytes
  * timestamp(microseconds) as 4 bytes (should give about 70 mins run time before overflow)
@@ -319,16 +365,17 @@ void USART1_IRQHandler(){
 			input_buffer_index = 0;
 			union{
 				uint8_t b[2];
-				int x;
+				unsigned int x;
 			} bt;
 
 			bt.b[1] = INPUT_BUFFER[0];
 			bt.b[0] = INPUT_BUFFER[1];
 
 			x_center = bt.x; //@TODO: remove x-center as global
+			//int xc = bt.x;
 
 			//now update target current_steps calculated from xcenter
-			update_target_steps(x_center);
+			//update_target_steps(xc);
 		}
 
 	}

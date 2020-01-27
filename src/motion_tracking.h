@@ -13,11 +13,11 @@ void init_TIM15(void);
 void init_GPIOA(void);
 void init_GPIOB(void);
 void init_UART1(void);
-
+void init_DMA(void);
 
 void calibrate();
 void update_motor_control(unsigned int current_steps);
-
+void update_target_steps(uint16_t x_center);
 
 
 
