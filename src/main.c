@@ -1,5 +1,6 @@
 /*motion tracking
 
+ * MCU: STM32F051, tested on UCT dev Board
  * this code for controlling the stepper motor
  * @TODO: JETSON will send position asynchronously to be read on uart via polling
  * stepper motor controlled by tim14 and freq is changed according to position
@@ -12,6 +13,7 @@
 #include <stdlib.h>
 //#include <math.h>
 
+
 #include "stm32f0xx.h"
 #include "diag/Trace.h"
 #include "motion_tracking.h"
@@ -22,7 +24,8 @@
 //----------------------GLOBAL VARS && CONSTANTS------------------------------------------------------------
 #define width 320
 
-volatile uint8_t DMA_BUFFER[6]; //6bytes of data to be sent
+volatile uint8_t DMA_BUFFER[6]; //6bytes of data to be sent via dma
+volatile uint8_t SEND_BUFFER[6]; // 6 byte to be stored before sending to dma, updated every 90hz
 
 volatile uint32_t microseconds;
 
@@ -30,8 +33,8 @@ volatile bool status = 0; //used to keep step status
 bool isCalibrated = 0;
 bool dir = 0;
 
-volatile unsigned int current_steps = 0;
-volatile unsigned int target_steps = 300; //max: 1200 current_steps == 180*
+volatile uint16_t current_steps = 0;
+volatile uint16_t target_steps = 300; //max: 1200 current_steps == 180*
 
 //as received from the uart
 volatile uint16_t x_center;
@@ -51,13 +54,23 @@ int main(){
 //setup
 
 	init_TIM14(); //used for motor stepping
+
+	init_TIM16();
+
 	init_GPIOA();
 	init_GPIOB();
+
 	init_UART1();
+	init_TIM15();
 
 	dir = 1;
 	GPIOB->ODR |= GPIO_ODR_1; //SET DIRECTION 1
 	calibrate();
+	//UART RX interrupt is enabled in the zero start button handler
+	for(int i=0; i<10000; i++){
+		continue;
+	}
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//interrupt for receive not empty
 
 //main loop
 	while(1){
@@ -104,7 +117,7 @@ void init_GPIOA(void){ //inputs port
 	EXTI->RTSR |= EXTI_RTSR_TR0; // trigger on rising edge
 	EXTI->FTSR |= EXTI_FTSR_TR0; // trigger on falling edge
 
-
+	NVIC_SetPriority(TIM15_IRQn, 0);
 	NVIC_EnableIRQ(EXTI0_1_IRQn);
 
 
@@ -142,7 +155,7 @@ void init_TIM15(void){ /*this timer used at 90Hz to send angle & timestamp data 
 
 }
 
-void init_TIM16(){ //used for keeping time
+void init_TIM16(void){ //used for keeping time
 	RCC->APB2ENR |= RCC_APB2ENR_TIM16EN;
 
 	//freq = 48000000/psc/arr = 1MHz (1 usecond period)
@@ -152,6 +165,7 @@ void init_TIM16(){ //used for keeping time
 	TIM16->DIER |= TIM_DIER_UIE; // enable update interrupt event
 	TIM16->CR1 |= TIM_CR1_CEN; //start timer
 
+	NVIC_SetPriority(TIM15_IRQn, 1);
 	NVIC_EnableIRQ(TIM16_IRQn);
 
 
@@ -202,29 +216,40 @@ void init_UART1(void){
 	USART_Init(USART1, &USART_InitStructure);
 	USART_Cmd(USART1,ENABLE);
 	//USART_ITConfig(USART1, USART_IT_TXE, ENABLE); //interrupt for transmit empty
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//interrupt for receive not empty
+	//USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//interrupt for receive not empty
 
 //configure dma
 	init_DMA();
+	//NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
 	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
-	DMA_ITConfig(DMA1_Channel1, DMA_IT_TC, ENABLE);
-	DMA_Cmd(DMA1_Channel1, ENABLE);
+	//DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, ENABLE);
+	DMA_Cmd(DMA1_Channel2, ENABLE);
 	//@TODO: IRQ Handler for dma
 }
 
 void init_DMA(void){
-	//configure the dma
+	/*configure the dma
+	 * https://community.st.com/s/question/0D50X00009XkZeLSAV/uart-with-dma-mode
+	 * */
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+
 	DMA_InitTypeDef DMA_InitStructure;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST; //source
+	DMA_DeInit(DMA1_Channel2);
+
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->TDR; //send to transmit data register (TDR) of the uart line
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&DMA_BUFFER; //6 bytes global buffer
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(USART1->TDR);
-	DMA_InitStructure.DMA_BufferSize = 6;
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST; //peripheral is destination
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStructure.DMA_BufferSize = sizeof(DMA_BUFFER)-1;
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
 	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable; //increment the memory adress
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable; //dont increment the peripheral (uart) adress
+	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable; //not used in memory to memory
+	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 
-	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+
+	DMA_Init(DMA1_Channel2, &DMA_InitStructure);
 
 }
 
@@ -332,25 +357,64 @@ void TIM14_IRQHandler(void){
 
 }
 
-void TIM15_IRQHandler(){ //@TODO
+void TIM15_IRQHandler(){
 /* data needs to be sent on this interrupt
  * angle(current_steps) as 2 bytes
  * timestamp(microseconds) as 4 bytes (should give about 70 mins run time before overflow)
  * we must create data packet of 6 bytes to be sent via uart to jetson using dma
+ * current_steps(2) | microseconds(4)
  **/
+	//create packet and load into dma buffer
+	union{
+		uint16_t s;
+		uint8_t bytes[2];
+	} steps;
 
+	steps.s = (uint16_t)current_steps;
+	DMA_BUFFER[0] = steps.bytes[0];
+	DMA_BUFFER[1] = steps.bytes[1];
+
+
+	union{
+		uint32_t us;
+		uint8_t bytes[4];
+	} useconds;
+
+	useconds.us = microseconds;
+	DMA_BUFFER[2] = useconds.bytes[0];
+	DMA_BUFFER[3] = useconds.bytes[1];
+	DMA_BUFFER[4] = useconds.bytes[2];
+	DMA_BUFFER[5] = useconds.bytes[3];
+
+	//send command for dma to send
+	if(DMA_GetFlagStatus(DMA1_FLAG_TC2)){
+		DMA_Cmd(DMA1_Channel2, DISABLE);
+		//USART_DMACmd(USART1, USART_DMAReq_Tx, DISABLE);
+		DMA_ClearFlag(DMA1_FLAG_TC2);
+
+		DMA_SetCurrDataCounter(DMA1_Channel2, 6);
+		DMA_Cmd(DMA1_Channel2, ENABLE);
+	}
+
+
+	TIM15->SR &= ~TIM_SR_UIF; //clear theinterrupt flag
 
 }
 
 void TIM16_IRQHandler(){
 	microseconds++;
+	TIM16->SR &= ~TIM_SR_UIF; //clear theinterrupt flag
 }
 
-void EXTI0_1_IRQHandler(void){
+void EXTI0_1_IRQHandler(void){ //when the zeero button is pressed
 	if(!isCalibrated){
 		isCalibrated = 1;
 		current_steps = 0;
-		//also set start time now
+		//set start time now
+		microseconds = 0;
+		//@TODO also buzz here
+
+
 	}
 
 	EXTI->PR |= EXTI_PR_PR0; //clear the interrupt
@@ -371,7 +435,7 @@ void USART1_IRQHandler(){
 			bt.b[1] = INPUT_BUFFER[0];
 			bt.b[0] = INPUT_BUFFER[1];
 
-			x_center = bt.x; //@TODO: remove x-center as global
+			x_center = bt.x;
 			//int xc = bt.x;
 
 			//now update target current_steps calculated from xcenter
@@ -381,5 +445,10 @@ void USART1_IRQHandler(){
 	}
 
 }
+
+
+
+
+
 
 // ---------------------------END-------------------------------------------------

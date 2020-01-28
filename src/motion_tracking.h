@@ -10,6 +10,8 @@
 
 void init_TIM14(void);
 void init_TIM15(void);
+void init_TIM16(void);
+
 void init_GPIOA(void);
 void init_GPIOB(void);
 void init_UART1(void);
