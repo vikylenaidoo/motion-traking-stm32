@@ -30,7 +30,7 @@ volatile uint8_t SEND_BUFFER[6]; // 6 byte to be stored before sending to dma, u
 volatile uint32_t microseconds;
 
 volatile bool status = 0; //used to keep step status
-bool isCalibrated = 0;
+volatile bool isCalibrated = 0;
 bool dir = 0;
 
 volatile uint16_t current_steps = 0;
@@ -38,11 +38,12 @@ volatile uint16_t target_steps = 300; //max: 1200 current_steps == 180*
 
 //as received from the uart
 volatile uint16_t x_center;
+volatile bool new_x_center_flag;
 
 //will be used to keep the incoming uart data
 #define INPUT_BUFFER_MAX_LENGTH 2
-uint8_t INPUT_BUFFER[INPUT_BUFFER_MAX_LENGTH]; //max 2 bytes
-uint8_t input_buffer_index = 0;
+volatile uint8_t INPUT_BUFFER[INPUT_BUFFER_MAX_LENGTH]; //max 2 bytes
+volatile uint8_t input_buffer_index = 0;
 
 
 
@@ -55,16 +56,19 @@ int main(){
 
 	init_TIM14(); //used for motor stepping
 
-	init_TIM16();
+	init_TIM16(); ///time keeping
+	init_TIM17(); //buzzer
 
 	init_GPIOA();
 	init_GPIOB();
 
 	init_UART1();
-	init_TIM15();
+	init_TIM15();//90hz send dma to uart tx
 
 	dir = 1;
 	GPIOB->ODR |= GPIO_ODR_1; //SET DIRECTION 1
+
+	isCalibrated = 0;
 	calibrate();
 	//UART RX interrupt is enabled in the zero start button handler
 	for(int i=0; i<10000; i++){
@@ -78,7 +82,7 @@ int main(){
 		unsigned int steps = current_steps;
 
 	/*receive x_center from jetson here*/
-		update_target_steps(x_center);
+		//update_target_steps(x_center);
 		update_motor_control(steps);
 
 
@@ -91,12 +95,15 @@ int main(){
 
 //-----------------------------INITIALISING FUNCTIONS-------------------------------------
 
-void init_GPIOB(void) //ouputs port
-{
+void init_GPIOB(void){//outputs port
+	/* PB0 for step
+	 * PB1 for direction
+	 * PB2 for buzzer
+	 * */
 	RCC->AHBENR |= RCC_AHBENR_GPIOBEN; //enable port B
 //	GPIOB->MODER  |= 0x00505555;
 	//set PB0 and PB1 to output mode
-	GPIOB->MODER |= (GPIO_MODER_MODER0_0|GPIO_MODER_MODER1_0);
+	GPIOB->MODER |= (GPIO_MODER_MODER0_0|GPIO_MODER_MODER1_0|GPIO_MODER_MODER2_0);
 
 	GPIOB->ODR     = 0b0000000000000000; //set all output pins low
 
@@ -105,19 +112,30 @@ void init_GPIOB(void) //ouputs port
 
 void init_GPIOA(void){ //inputs port
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+
 	GPIOA->MODER &= ~GPIO_MODER_MODER0;  // set sw0 to input
 	GPIOA->PUPDR |= GPIO_PUPDR_PUPDR0_0; //pullup for sw0
+
+	GPIOA->MODER &= ~GPIO_MODER_MODER1;  // set sw1 to input
+	GPIOA->PUPDR |= GPIO_PUPDR_PUPDR1_0; //pullup for sw1
+
 
 	//configure interrupts
 	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //enable clock for syscfg
 	SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PA; // map pa0 to exti0
+	SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI1_PA; // map pa1 to exti1
 
-	//SW0
+	//SW0 (PA0) used for calibrating the angle
 	EXTI->IMR |= EXTI_IMR_MR0; //UNMASK EXTI0
-	EXTI->RTSR |= EXTI_RTSR_TR0; // trigger on rising edge
+	//EXTI->RTSR |= EXTI_RTSR_TR0; // trigger on rising edge
 	EXTI->FTSR |= EXTI_FTSR_TR0; // trigger on falling edge
 
-	NVIC_SetPriority(TIM15_IRQn, 0);
+	//SW1 (PA1) used for setting the time to zero
+	EXTI->IMR |= EXTI_IMR_MR1; //UNMASK EXTI1
+	//EXTI->RTSR |= EXTI_RTSR_TR0; // trigger on rising edge
+	EXTI->FTSR |= EXTI_FTSR_TR1; // trigger on falling edge
+
+
 	NVIC_EnableIRQ(EXTI0_1_IRQn);
 
 
@@ -129,12 +147,12 @@ void init_TIM14(void){ /*this timer used for motor control*/
 
 	//freq = 48000000/psc/arr hz
 	TIM14->PSC = 999; //scale frequency
-	TIM14->ARR = 499; //set value to count up to
+	TIM14->ARR = 199; //set value to count up to
 
 	TIM14->DIER |= TIM_DIER_UIE; // enable update interrupt event
 	TIM14->CR1 |= TIM_CR1_CEN; //start timer
 
-	NVIC_SetPriority(TIM15_IRQn, 2);
+	NVIC_SetPriority(TIM14_IRQn, 2);
 	NVIC_EnableIRQ(TIM14_IRQn);
 
 }
@@ -160,20 +178,40 @@ void init_TIM16(void){ //used for keeping time
 
 	//freq = 48000000/psc/arr = 1MHz (1 usecond period)
 	TIM16->PSC = 0;
-	TIM16->ARR = 47;
+	TIM16->ARR = 95;//47;
 
 	TIM16->DIER |= TIM_DIER_UIE; // enable update interrupt event
 	TIM16->CR1 |= TIM_CR1_CEN; //start timer
 
-	NVIC_SetPriority(TIM15_IRQn, 1);
+	NVIC_SetPriority(TIM16_IRQn, 0);
 	NVIC_EnableIRQ(TIM16_IRQn);
+
+
+}
+
+void init_TIM17(void){
+	/* Timer used for the buzzer with period of 0.5s
+	 * start timer will be done when the zero time has been calibrated
+	 * and the timer will be diabled in its own interrupt (after 1 period)
+	 * */
+
+	RCC->APB2ENR |= RCC_APB2ENR_TIM17EN;
+
+	//freq = 48000000/psc/arr
+	TIM17->PSC = 999;
+	TIM17->ARR = 95999; //0.5Hz
+
+	TIM17->DIER |= TIM_DIER_UIE; // enable update interrupt event
+
+	NVIC_EnableIRQ(TIM17_IRQn);
 
 
 }
 
 void init_UART1(void){
 	/*initilaise UART1
-	 *
+	 * RX from the jetson will have an interrupt on RXNE
+	 * TX is sent from the DMA on the 90Hz timer (polling mode), no DMA interrupts initialised
 	 **/
 
 	/*
@@ -211,6 +249,7 @@ void init_UART1(void){
 	NVIC_InitStructure.NVIC_IRQChannelPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+	NVIC_SetPriority(USART1_IRQn, 1);
 
 //enable uart
 	USART_Init(USART1, &USART_InitStructure);
@@ -224,7 +263,7 @@ void init_UART1(void){
 	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
 	//DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, ENABLE);
 	DMA_Cmd(DMA1_Channel2, ENABLE);
-	//@TODO: IRQ Handler for dma
+
 }
 
 void init_DMA(void){
@@ -278,10 +317,10 @@ void update_motor_control(unsigned int steps){
 	}
 	else{
 		if(error>134){ //20 degrees: fastest
-			arr = 47;//47;//479; //100 hz	//@TODO: tune eqn
+			arr = 59;//47;//479; //100 hz	//@TODO: tune eqn, INVESTIGATE FREQ 1KHZ?
 		}
 		else{
-			arr = (int)(8000/error) - 1; //@TODO: tune eqn
+			arr = (int)(6400/error) - 1; //@TODO: tune eqn
 		}
 	}
 	TIM14->ARR = arr; //set value to count up to
@@ -301,36 +340,50 @@ void update_motor_control(unsigned int steps){
 }
 
 void update_target_steps(uint16_t x_center){
-	int dead_center = width/2;
-	uint16_t x_error = abs(x_center-dead_center);
-	uint16_t target;
-	unsigned int steps = current_steps;
+	/*will look at the global xcenter to update what our target angle(steps) should be
+	 * update_motor_control() will use the new target_steps to move the motor into position
+	 * */
 
-	if(x_error<25){ //small error
-		if(x_center>dead_center){
-			target = steps + 2*x_error; //@TODO: tune eqn
-		}
-		else{
-			target = steps - 2*x_error; //@TODO: tune eqn
-		}
-	}
-	else{ //large error
-		if(x_center>dead_center){
-			target = steps + 3*x_error; //@TODO: tune eqn
-		}
-		else{
-			target = steps - 3*x_error; //@TODO: tune eqn
-		}
-	}
+	if(new_x_center_flag){ //check if the xcenter has been updated (from uart rx)
+		int dead_center = width/2;
+		uint16_t x_error = abs(x_center-dead_center);
+		uint16_t target;
+		unsigned int steps = current_steps;
 
-	//check target is within bounds
-	if(target<1200 && target>0){
-		target_steps = target;
-	}//else invalid target
-	else{
-		target = 0;
-	}
+		if(x_error<50){ //small error
+			if(x_center>dead_center){
+				target = steps + 2.5*x_error; //@TODO: tune eqn
+			}
+			else{
+				target = steps - 2.5*x_error; //@TODO: tune eqn
+			}
+		}
+		else{ //large error
+			if(x_center>dead_center){
+				target = steps + 2*x_error; //@TODO: tune eqn
+			}
+			else{
+				target = steps - 2*x_error; //@TODO: tune eqn
+			}
+		}
 
+		//check target is within bounds
+		if(target<1200 && target>0){
+			target_steps = target;
+		}//else invalid target @TODO: see if valid target
+		/*else{
+			if(target>32000){ //underflow
+				target = 0;
+				target_steps = target;
+			}
+			else{
+				target = 1200;
+				target_steps = target;
+			}
+		}*/
+
+		new_x_center_flag = 0;
+	}
 }
 
 
@@ -340,13 +393,15 @@ void TIM14_IRQHandler(void){
 	status = !status;
 
 	if(status){
-		if(dir){
+		if(dir && current_steps>0){
 			current_steps--;
+			GPIOB->ODR |= GPIO_ODR_0; //set PB0 high
 		}
 		else{
 			current_steps++;
+			GPIOB->ODR |= GPIO_ODR_0; //set PB0 high
 		}
-		GPIOB->ODR |= GPIO_ODR_0; //set PB0 high
+
 	}
 	else{
 		GPIOB->ODR &= ~GPIO_ODR_0; //set PB0 low
@@ -406,18 +461,46 @@ void TIM16_IRQHandler(){
 	TIM16->SR &= ~TIM_SR_UIF; //clear theinterrupt flag
 }
 
-void EXTI0_1_IRQHandler(void){ //when the zeero button is pressed
-	if(!isCalibrated){
-		isCalibrated = 1;
-		current_steps = 0;
-		//set start time now
-		microseconds = 0;
-		//@TODO also buzz here
+
+void TIM17_IRQHandler(){
+	/* disables the beep after 0.5s*/
+	GPIOB->ODR &= ~GPIO_ODR_2;
+	TIM17->CR1 &= ~TIM_CR1_CEN; //disable itself
+	TIM17->SR &= ~TIM_SR_UIF;//clear the interrupt flag
+}
 
 
+
+
+void EXTI0_1_IRQHandler(void){
+
+	if(EXTI->PR & EXTI_PR_PR0){ //SW0 has been pressed
+		//calibrate the angle to zero
+		if(!isCalibrated){
+			TIM14->CR1 &= ~TIM_CR1_CEN;
+
+			current_steps = 0;
+
+			isCalibrated = 1;
+			dir = 0;
+			TIM14->CR1 |= TIM_CR1_CEN;
+		}
+
+		EXTI->PR |= EXTI_PR_PR0; //clear the interrupt
 	}
+	//else{
 
-	EXTI->PR |= EXTI_PR_PR0; //clear the interrupt
+		if(EXTI->PR & EXTI_PR_PR1){ //SW1 has been pressed
+			TIM16->CR1 &= ~TIM_CR1_CEN;// disable the timekeeping timer
+			microseconds = 0;
+			TIM16->CR1 |= TIM_CR1_CEN; //restart the time
+			//@TODO beep here
+			GPIOB->ODR |= GPIO_ODR_2;//beep pin
+			TIM17->CR1 |= TIM_CR1_CEN; // start tim17 which will beep for 1 period (0.5s) then disable itself and the beep
+
+			EXTI->PR |= EXTI_PR_PR1; //clear the interrupt
+		}
+	//}
 }
 
 void USART1_IRQHandler(){
@@ -435,11 +518,12 @@ void USART1_IRQHandler(){
 			bt.b[1] = INPUT_BUFFER[0];
 			bt.b[0] = INPUT_BUFFER[1];
 
-			x_center = bt.x;
-			//int xc = bt.x;
+			//x_center = bt.x;
+			new_x_center_flag = 1;
+			uint16_t xc = bt.x;
 
 			//now update target current_steps calculated from xcenter
-			//update_target_steps(xc);
+			update_target_steps(xc);
 		}
 
 	}

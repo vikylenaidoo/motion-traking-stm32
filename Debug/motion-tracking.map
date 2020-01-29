@@ -4,6 +4,30 @@ Archive member included to satisfy reference by file (symbol)
                               ./system/src/stm32f0-stdperiph/stm32f0xx_rcc.o (__aeabi_uidiv)
 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
                               /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o) (__aeabi_idiv0)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
+                              ./src/main.o (__aeabi_d2uiz)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
+                              ./src/main.o (__aeabi_dadd)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+                              ./src/main.o (__aeabi_dmul)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
+                              ./src/main.o (__aeabi_dsub)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
+                              /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o) (__aeabi_d2iz)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
+                              ./src/main.o (__aeabi_i2d)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
+                              ./src/main.o (__aeabi_ui2d)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o)
+                              /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o) (__aeabi_dcmpge)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_clzsi2.o)
+                              /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o) (__clzsi2)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
+                              /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o) (__eqdf2)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
+                              /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o) (__gedf2)
+/opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
+                              /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o) (__ledf2)
 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
                               ./src/main.o (abs)
 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-errno.o)
@@ -19,6 +43,7 @@ microseconds        0x4               ./src/main.o
 SEND_BUFFER         0x6               ./src/main.o
 x_center            0x2               ./src/main.o
 DMA_BUFFER          0x6               ./src/main.o
+new_x_center_flag   0x1               ./src/main.o
 INPUT_BUFFER        0x2               ./src/main.o
 
 Discarded input sections
@@ -1468,6 +1493,30 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o)
  .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
  .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_clzsi2.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_clzsi2.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
+ .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
+ .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
  .text          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
  .data          0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
  .bss           0x0000000000000000        0x0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
@@ -1584,7 +1633,6 @@ END GROUP
                 0x0000000008000298                ADC1_IRQHandler
                 0x0000000008000298                I2C2_IRQHandler
                 0x0000000008000298                USART3_6_IRQHandler
-                0x0000000008000298                TIM17_IRQHandler
                 0x0000000008000298                CEC_CAN_IRQHandler
                 0x0000000008000298                RTC_IRQHandler
                 0x0000000008000298                PVD_VDDIO2_IRQHandler
@@ -1613,10 +1661,10 @@ END GROUP
 
 .inits          0x00000000080002a0       0x28
                 0x00000000080002a0                __data_regions_array_start = .
-                0x00000000080002a0        0x4 LONG 0x800270c LOADADDR (.data)
+                0x00000000080002a0        0x4 LONG 0x8003f2c LOADADDR (.data)
                 0x00000000080002a4        0x4 LONG 0x20000000 ADDR (.data)
                 0x00000000080002a8        0x4 LONG 0x20000038 (ADDR (.data) + SIZEOF (.data))
-                0x00000000080002ac        0x4 LONG 0x800270c LOADADDR (.data_CCMRAM)
+                0x00000000080002ac        0x4 LONG 0x8003f2c LOADADDR (.data_CCMRAM)
                 0x00000000080002b0        0x4 LONG 0x0 ADDR (.data_CCMRAM)
                 0x00000000080002b4        0x4 LONG 0x0 (ADDR (.data_CCMRAM) + SIZEOF (.data_CCMRAM))
                 0x00000000080002b8                __data_regions_array_end = .
@@ -1648,7 +1696,7 @@ END GROUP
 .flashtext
  *(.flashtext .flashtext.*)
 
-.text           0x00000000080002c8     0x2443
+.text           0x00000000080002c8     0x3c64
  *(.text .text.*)
  .text.DMA_DeInit
                 0x00000000080002c8      0x1f4 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
@@ -1723,109 +1771,152 @@ END GROUP
                 0x0000000008001b6c       0x2c ./src/main.o
  .text.NVIC_SetPriority
                 0x0000000008001b98       0xdc ./src/main.o
- .text.main     0x0000000008001c74       0x94 ./src/main.o
+ .text.main     0x0000000008001c74       0x90 ./src/main.o
                 0x0000000008001c74                main
  .text.init_GPIOB
-                0x0000000008001d08       0x34 ./src/main.o
-                0x0000000008001d08                init_GPIOB
+                0x0000000008001d04       0x34 ./src/main.o
+                0x0000000008001d04                init_GPIOB
  .text.init_GPIOA
-                0x0000000008001d3c       0x8c ./src/main.o
-                0x0000000008001d3c                init_GPIOA
+                0x0000000008001d38       0xb8 ./src/main.o
+                0x0000000008001d38                init_GPIOA
  .text.init_TIM14
-                0x0000000008001dc8       0x60 ./src/main.o
-                0x0000000008001dc8                init_TIM14
+                0x0000000008001df0       0x60 ./src/main.o
+                0x0000000008001df0                init_TIM14
  .text.init_TIM15
-                0x0000000008001e28       0x60 ./src/main.o
-                0x0000000008001e28                init_TIM15
+                0x0000000008001e50       0x60 ./src/main.o
+                0x0000000008001e50                init_TIM15
  .text.init_TIM16
-                0x0000000008001e88       0x5c ./src/main.o
-                0x0000000008001e88                init_TIM16
+                0x0000000008001eb0       0x5c ./src/main.o
+                0x0000000008001eb0                init_TIM16
+ .text.init_TIM17
+                0x0000000008001f0c       0x4c ./src/main.o
+                0x0000000008001f0c                init_TIM17
  .text.init_UART1
-                0x0000000008001ee4      0x15c ./src/main.o
-                0x0000000008001ee4                init_UART1
+                0x0000000008001f58      0x164 ./src/main.o
+                0x0000000008001f58                init_UART1
  .text.init_DMA
-                0x0000000008002040       0x7c ./src/main.o
-                0x0000000008002040                init_DMA
+                0x00000000080020bc       0x7c ./src/main.o
+                0x00000000080020bc                init_DMA
  .text.calibrate
-                0x00000000080020bc       0x20 ./src/main.o
-                0x00000000080020bc                calibrate
+                0x0000000008002138       0x20 ./src/main.o
+                0x0000000008002138                calibrate
  .text.update_motor_control
-                0x00000000080020dc       0xa4 ./src/main.o
-                0x00000000080020dc                update_motor_control
+                0x0000000008002158       0xa4 ./src/main.o
+                0x0000000008002158                update_motor_control
  .text.update_target_steps
-                0x0000000008002180       0xf0 ./src/main.o
-                0x0000000008002180                update_target_steps
+                0x00000000080021fc      0x150 ./src/main.o
+                0x00000000080021fc                update_target_steps
  .text.TIM14_IRQHandler
-                0x0000000008002270       0xa0 ./src/main.o
-                0x0000000008002270                TIM14_IRQHandler
+                0x000000000800234c       0xb8 ./src/main.o
+                0x000000000800234c                TIM14_IRQHandler
  .text.TIM15_IRQHandler
-                0x0000000008002310       0xa0 ./src/main.o
-                0x0000000008002310                TIM15_IRQHandler
+                0x0000000008002404       0xa0 ./src/main.o
+                0x0000000008002404                TIM15_IRQHandler
  .text.TIM16_IRQHandler
-                0x00000000080023b0       0x2c ./src/main.o
-                0x00000000080023b0                TIM16_IRQHandler
+                0x00000000080024a4       0x2c ./src/main.o
+                0x00000000080024a4                TIM16_IRQHandler
+ .text.TIM17_IRQHandler
+                0x00000000080024d0       0x44 ./src/main.o
+                0x00000000080024d0                TIM17_IRQHandler
  .text.EXTI0_1_IRQHandler
-                0x00000000080023dc       0x48 ./src/main.o
-                0x00000000080023dc                EXTI0_1_IRQHandler
+                0x0000000008002514       0xe4 ./src/main.o
+                0x0000000008002514                EXTI0_1_IRQHandler
  .text.USART1_IRQHandler
-                0x0000000008002424       0x7c ./src/main.o
-                0x0000000008002424                USART1_IRQHandler
- .text          0x00000000080024a0      0x114 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o)
-                0x00000000080024a0                __udivsi3
-                0x00000000080024a0                __aeabi_uidiv
-                0x00000000080025ac                __aeabi_uidivmod
- .text          0x00000000080025b4        0x4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
-                0x00000000080025b4                __aeabi_ldiv0
-                0x00000000080025b4                __aeabi_idiv0
- .text.abs      0x00000000080025b8        0x8 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
-                0x00000000080025b8                abs
+                0x00000000080025f8       0x94 ./src/main.o
+                0x00000000080025f8                USART1_IRQHandler
+ .text          0x000000000800268c      0x114 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o)
+                0x000000000800268c                __udivsi3
+                0x000000000800268c                __aeabi_uidiv
+                0x0000000008002798                __aeabi_uidivmod
+ .text          0x00000000080027a0        0x4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
+                0x00000000080027a0                __aeabi_ldiv0
+                0x00000000080027a0                __aeabi_idiv0
+ .text          0x00000000080027a4       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
+                0x00000000080027a4                __fixunsdfsi
+                0x00000000080027a4                __aeabi_d2uiz
+ .text          0x00000000080027e0      0x638 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
+                0x00000000080027e0                __aeabi_dadd
+ .text          0x0000000008002e18      0x4e4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+                0x0000000008002e18                __aeabi_dmul
+ .text          0x00000000080032fc      0x690 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
+                0x00000000080032fc                __aeabi_dsub
+ .text          0x000000000800398c       0x6c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
+                0x000000000800398c                __aeabi_d2iz
+ .text          0x00000000080039f8       0x74 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
+                0x00000000080039f8                __aeabi_i2d
+ .text          0x0000000008003a6c       0x64 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
+                0x0000000008003a6c                __aeabi_ui2d
+ .text          0x0000000008003ad0       0x7c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o)
+                0x0000000008003ad0                __aeabi_cdrcmple
+                0x0000000008003ae0                __aeabi_cdcmple
+                0x0000000008003ae0                __aeabi_cdcmpeq
+                0x0000000008003af0                __aeabi_dcmpeq
+                0x0000000008003afc                __aeabi_dcmplt
+                0x0000000008003b10                __aeabi_dcmple
+                0x0000000008003b24                __aeabi_dcmpgt
+                0x0000000008003b38                __aeabi_dcmpge
+ .text          0x0000000008003b4c       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_clzsi2.o)
+                0x0000000008003b4c                __clzsi2
+ .text          0x0000000008003b88       0x78 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
+                0x0000000008003b88                __eqdf2
+                0x0000000008003b88                __nedf2
+ .text          0x0000000008003c00       0xc8 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
+                0x0000000008003c00                __gtdf2
+                0x0000000008003c00                __gedf2
+ .text          0x0000000008003cc8       0xd0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
+                0x0000000008003cc8                __ltdf2
+                0x0000000008003cc8                __ledf2
+ .text.abs      0x0000000008003d98        0x8 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
+                0x0000000008003d98                abs
  *(.rodata .rodata.* .constdata .constdata.*)
- .rodata        0x00000000080025c0       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
- .rodata        0x00000000080025f0       0x31 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
- *fill*         0x0000000008002621        0x3 
- .rodata        0x0000000008002624       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_rcc.o
- .rodata        0x0000000008002654       0x32 ./system/src/stm32f0-stdperiph/stm32f0xx_usart.o
- *fill*         0x0000000008002686        0x2 
- .rodata        0x0000000008002688       0x14 ./system/src/newlib/_exit.o
- .rodata        0x000000000800269c       0x6f ./system/src/newlib/assert.o
+ .rodata        0x0000000008003da0       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
+ .rodata        0x0000000008003dd0       0x31 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
+ *fill*         0x0000000008003e01        0x3 
+ .rodata        0x0000000008003e04       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_rcc.o
+ .rodata        0x0000000008003e34       0x32 ./system/src/stm32f0-stdperiph/stm32f0xx_usart.o
+ *fill*         0x0000000008003e66        0x2 
+ .rodata        0x0000000008003e68       0x14 ./system/src/newlib/_exit.o
+ .rodata        0x0000000008003e7c       0x6f ./system/src/newlib/assert.o
+ *fill*         0x0000000008003eeb        0x1 
+ .rodata        0x0000000008003eec       0x40 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
  *(vtable)
  *(.eh_frame*)
  *(.glue_7)
- .glue_7        0x000000000800270b        0x0 linker stubs
+ .glue_7        0x0000000008003f2c        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x000000000800270b        0x0 linker stubs
+ .glue_7t       0x0000000008003f2c        0x0 linker stubs
 
-.vfp11_veneer   0x000000000800270c        0x0
- .vfp11_veneer  0x000000000800270c        0x0 linker stubs
+.vfp11_veneer   0x0000000008003f2c        0x0
+ .vfp11_veneer  0x0000000008003f2c        0x0 linker stubs
 
-.v4_bx          0x000000000800270c        0x0
- .v4_bx         0x000000000800270c        0x0 linker stubs
+.v4_bx          0x0000000008003f2c        0x0
+ .v4_bx         0x0000000008003f2c        0x0 linker stubs
 
-.iplt           0x000000000800270c        0x0
- .iplt          0x000000000800270c        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
+.iplt           0x0000000008003f2c        0x0
+ .iplt          0x0000000008003f2c        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
 
-.rel.dyn        0x000000000800270c        0x0
- .rel.iplt      0x000000000800270c        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
+.rel.dyn        0x0000000008003f2c        0x0
+ .rel.iplt      0x0000000008003f2c        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x000000000800270c                . = ALIGN (0x4)
-                0x000000000800270c                __exidx_start = .
+                0x0000000008003f2c                . = ALIGN (0x4)
+                0x0000000008003f2c                __exidx_start = .
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x000000000800270c                __exidx_end = .
-                0x000000000800270c                . = ALIGN (0x4)
-                0x000000000800270c                _etext = .
-                0x000000000800270c                __etext = .
+                0x0000000008003f2c                __exidx_end = .
+                0x0000000008003f2c                . = ALIGN (0x4)
+                0x0000000008003f2c                _etext = .
+                0x0000000008003f2c                __etext = .
 
-.data_CCMRAM    0x0000000000000000        0x0 load address 0x000000000800270c
+.data_CCMRAM    0x0000000000000000        0x0 load address 0x0000000008003f2c
  FILL mask 0xff
  *(.data.CCMRAM .data.CCMRAM.*)
                 0x0000000000000000                . = ALIGN (0x4)
-                0x000000000800270c                _sidata = LOADADDR (.data)
+                0x0000000008003f2c                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x38 load address 0x000000000800270c
+.data           0x0000000020000000       0x38 load address 0x0000000008003f2c
  FILL mask 0xff
                 0x0000000020000000                _sdata = .
                 0x0000000020000000                __data_start__ = .
@@ -1852,7 +1943,7 @@ END GROUP
                 0x0000000020000038                _edata = .
                 0x0000000020000038                __data_end__ = .
 
-.igot.plt       0x0000000020000038        0x0 load address 0x0000000008002744
+.igot.plt       0x0000000020000038        0x0 load address 0x0000000008003f64
  .igot.plt      0x0000000020000038        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
 
 .bss_CCMRAM     0x0000000000000000        0x0
@@ -1886,6 +1977,7 @@ END GROUP
                 0x0000000020000048                SEND_BUFFER
                 0x000000002000004e                x_center
                 0x0000000020000050                DMA_BUFFER
+                0x0000000020000056                new_x_center_flag
                 0x0000000020000058                INPUT_BUFFER
  *(.bss_end .bss_end.*)
  *fill*         0x000000002000005a        0x2 
@@ -2004,7 +2096,31 @@ END GROUP
  .ARM.attributes
                 0x000000000000029b       0x1e /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
  .ARM.attributes
-                0x00000000000002b9       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
+                0x00000000000002b9       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
+ .ARM.attributes
+                0x00000000000002e5       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
+ .ARM.attributes
+                0x0000000000000311       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+ .ARM.attributes
+                0x000000000000033d       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
+ .ARM.attributes
+                0x0000000000000369       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
+ .ARM.attributes
+                0x0000000000000395       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
+ .ARM.attributes
+                0x00000000000003c1       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
+ .ARM.attributes
+                0x00000000000003ed       0x1e /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o)
+ .ARM.attributes
+                0x000000000000040b       0x1e /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_clzsi2.o)
+ .ARM.attributes
+                0x0000000000000429       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
+ .ARM.attributes
+                0x0000000000000455       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
+ .ARM.attributes
+                0x0000000000000481       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
+ .ARM.attributes
+                0x00000000000004ad       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
 
 .debug
  *(.debug)
@@ -2018,7 +2134,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x0000000000000000      0x5d8
+.debug_aranges  0x0000000000000000      0x5e8
  *(.debug_aranges)
  .debug_aranges
                 0x0000000000000000       0x78 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
@@ -2045,12 +2161,12 @@ END GROUP
  .debug_aranges
                 0x0000000000000510       0x20 ./system/src/cmsis/vectors_stm32f0xx.o
  .debug_aranges
-                0x0000000000000530       0xa8 ./src/main.o
+                0x0000000000000530       0xb8 ./src/main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000     0x6622
+.debug_info     0x0000000000000000     0x6685
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000      0x4b8 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
  .debug_info    0x00000000000004b8      0x35a ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
@@ -2064,7 +2180,7 @@ END GROUP
  .debug_info    0x00000000000041c2      0xa09 ./system/src/cortexm/exception_handlers.o
  .debug_info    0x0000000000004bcb      0x2e5 ./system/src/cmsis/system_stm32f0xx.o
  .debug_info    0x0000000000004eb0       0xca ./system/src/cmsis/vectors_stm32f0xx.o
- .debug_info    0x0000000000004f7a     0x16a8 ./src/main.o
+ .debug_info    0x0000000000004f7a     0x170b ./src/main.o
 
 .debug_abbrev   0x0000000000000000     0x15a3
  *(.debug_abbrev)
@@ -2082,7 +2198,7 @@ END GROUP
  .debug_abbrev  0x000000000000118c       0x9d ./system/src/cmsis/vectors_stm32f0xx.o
  .debug_abbrev  0x0000000000001229      0x37a ./src/main.o
 
-.debug_line     0x0000000000000000     0x4d2e
+.debug_line     0x0000000000000000     0x4d76
  *(.debug_line)
  .debug_line    0x0000000000000000      0xbfc ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
  .debug_line    0x0000000000000bfc      0x3a8 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
@@ -2096,9 +2212,9 @@ END GROUP
  .debug_line    0x0000000000003b67      0x5ef ./system/src/cortexm/exception_handlers.o
  .debug_line    0x0000000000004156      0x39e ./system/src/cmsis/system_stm32f0xx.o
  .debug_line    0x00000000000044f4       0xdc ./system/src/cmsis/vectors_stm32f0xx.o
- .debug_line    0x00000000000045d0      0x75e ./src/main.o
+ .debug_line    0x00000000000045d0      0x7a6 ./src/main.o
 
-.debug_frame    0x0000000000000000     0x132c
+.debug_frame    0x0000000000000000     0x156c
  *(.debug_frame)
  .debug_frame   0x0000000000000000      0x190 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
  .debug_frame   0x0000000000000190       0x70 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
@@ -2112,11 +2228,21 @@ END GROUP
  .debug_frame   0x0000000000000f5c       0xcc ./system/src/cortexm/exception_handlers.o
  .debug_frame   0x0000000000001028       0x6c ./system/src/cmsis/system_stm32f0xx.o
  .debug_frame   0x0000000000001094       0x2c ./system/src/cmsis/vectors_stm32f0xx.o
- .debug_frame   0x00000000000010c0      0x22c ./src/main.o
- .debug_frame   0x00000000000012ec       0x20 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o)
- .debug_frame   0x000000000000130c       0x20 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
+ .debug_frame   0x00000000000010c0      0x268 ./src/main.o
+ .debug_frame   0x0000000000001328       0x20 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o)
+ .debug_frame   0x0000000000001348       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
+ .debug_frame   0x0000000000001374       0x38 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
+ .debug_frame   0x00000000000013ac       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+ .debug_frame   0x00000000000013e8       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
+ .debug_frame   0x0000000000001424       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
+ .debug_frame   0x0000000000001450       0x2c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
+ .debug_frame   0x000000000000147c       0x28 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
+ .debug_frame   0x00000000000014a4       0x38 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
+ .debug_frame   0x00000000000014dc       0x38 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
+ .debug_frame   0x0000000000001514       0x38 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
+ .debug_frame   0x000000000000154c       0x20 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
 
-.debug_str      0x0000000000000000    0x52618
+.debug_str      0x0000000000000000    0x52646
  *(.debug_str)
  .debug_str     0x0000000000000000    0x4a89f ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
                                       0x4aa16 (size before relaxing)
@@ -2142,8 +2268,8 @@ END GROUP
                                       0x4a3c7 (size before relaxing)
  .debug_str     0x0000000000052111       0x56 ./system/src/cmsis/vectors_stm32f0xx.o
                                        0x37c6 (size before relaxing)
- .debug_str     0x0000000000052167      0x4b1 ./src/main.o
-                                      0x4fbc6 (size before relaxing)
+ .debug_str     0x0000000000052167      0x4df ./src/main.o
+                                      0x4fbf4 (size before relaxing)
 
 .debug_loc
  *(.debug_loc)
@@ -2164,7 +2290,7 @@ END GROUP
  *(.debug_varnames)
 OUTPUT(motion-tracking.elf elf32-littlearm)
 
-.debug_ranges   0x0000000000000000      0x508
+.debug_ranges   0x0000000000000000      0x518
  .debug_ranges  0x0000000000000000       0x68 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
  .debug_ranges  0x0000000000000068       0x20 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
  .debug_ranges  0x0000000000000088      0x150 ./system/src/stm32f0-stdperiph/stm32f0xx_rcc.o
@@ -2177,7 +2303,7 @@ OUTPUT(motion-tracking.elf elf32-littlearm)
  .debug_ranges  0x0000000000000400       0x40 ./system/src/cortexm/exception_handlers.o
  .debug_ranges  0x0000000000000440       0x20 ./system/src/cmsis/system_stm32f0xx.o
  .debug_ranges  0x0000000000000460       0x10 ./system/src/cmsis/vectors_stm32f0xx.o
- .debug_ranges  0x0000000000000470       0x98 ./src/main.o
+ .debug_ranges  0x0000000000000470       0xa8 ./src/main.o
 
 .debug_macro    0x0000000000000000     0xdb02
  .debug_macro   0x0000000000000000      0x1b9 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
