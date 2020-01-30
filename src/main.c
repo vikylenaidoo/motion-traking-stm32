@@ -33,7 +33,7 @@ volatile bool status = 0; //used to keep step status
 volatile bool isCalibrated = 0;
 bool dir = 0;
 
-volatile uint16_t current_steps = 0;
+volatile uint16_t current_steps = 1200;
 volatile uint16_t target_steps = 300; //max: 1200 current_steps == 180*
 
 //as received from the uart
@@ -45,9 +45,9 @@ volatile bool new_x_center_flag;
 volatile uint8_t INPUT_BUFFER[INPUT_BUFFER_MAX_LENGTH]; //max 2 bytes
 volatile uint8_t input_buffer_index = 0;
 
-
-
-
+volatile bool time_calibrate_flag = 0; //used if the time zero button is pressed to reset the time on the next 90Hz sending interrupt
+volatile uint32_t last_trigger_exti0_1 = 0; //used for debouncing the btn
+volatile uint32_t last_trigger_exti2_3 = 0; //used for debouncing the btn
 // ------------------------MAIN--------------------------------------------
 
 
@@ -70,20 +70,20 @@ int main(){
 
 	isCalibrated = 0;
 	calibrate();
-	//UART RX interrupt is enabled in the zero start button handler
-	for(int i=0; i<10000; i++){
-		continue;
-	}
+
+	//delay for the motor to come to stops
+
+	init_TIM3();
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//interrupt for receive not empty
 
 //main loop
 	while(1){
 		//float current_angle = current_steps*0.15;
-		unsigned int steps = current_steps;
+		//uint16_t steps = current_steps;
 
 	/*receive x_center from jetson here*/
 		//update_target_steps(x_center);
-		update_motor_control(steps);
+		//update_motor_control(steps);
 
 
 
@@ -119,24 +119,47 @@ void init_GPIOA(void){ //inputs port
 	GPIOA->MODER &= ~GPIO_MODER_MODER1;  // set sw1 to input
 	GPIOA->PUPDR |= GPIO_PUPDR_PUPDR1_0; //pullup for sw1
 
+	GPIOA->MODER &= ~GPIO_MODER_MODER2;  // set sw2 to input
+	GPIOA->PUPDR |= GPIO_PUPDR_PUPDR2_0; //pullup for sw2
 
 	//configure interrupts
 	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //enable clock for syscfg
 	SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PA; // map pa0 to exti0
 	SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI1_PA; // map pa1 to exti1
+	SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI2_PA;
 
 	//SW0 (PA0) used for calibrating the angle
 	EXTI->IMR |= EXTI_IMR_MR0; //UNMASK EXTI0
-	//EXTI->RTSR |= EXTI_RTSR_TR0; // trigger on rising edge
 	EXTI->FTSR |= EXTI_FTSR_TR0; // trigger on falling edge
 
 	//SW1 (PA1) used for setting the time to zero
 	EXTI->IMR |= EXTI_IMR_MR1; //UNMASK EXTI1
-	//EXTI->RTSR |= EXTI_RTSR_TR0; // trigger on rising edge
 	EXTI->FTSR |= EXTI_FTSR_TR1; // trigger on falling edge
+
+	//SW2 (PA2) used for step testing
+	EXTI->IMR |= EXTI_IMR_MR2; //UNMASK EXTI1
+	EXTI->FTSR |= EXTI_FTSR_TR2; // trigger on falling edge
 
 
 	NVIC_EnableIRQ(EXTI0_1_IRQn);
+	NVIC_EnableIRQ(EXTI2_3_IRQn);
+	//NVIC_SetPriority(EXTI2_3_IRQn, 0);
+
+}
+
+
+void init_TIM3(void){
+	RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
+
+	//freq = 48000000/psc/arr hz
+	TIM3->PSC = 999; //scale frequency
+	TIM3->ARR = 1499; //set value to count up to
+
+	TIM3->DIER |= TIM_DIER_UIE; // enable update interrupt event
+	TIM3->CR1 |= TIM_CR1_CEN; //start timer
+
+	NVIC_SetPriority(TIM3_IRQn, 1);
+	NVIC_EnableIRQ(TIM3_IRQn);
 
 
 }
@@ -147,12 +170,13 @@ void init_TIM14(void){ /*this timer used for motor control*/
 
 	//freq = 48000000/psc/arr hz
 	TIM14->PSC = 999; //scale frequency
-	TIM14->ARR = 199; //set value to count up to
+	TIM14->ARR = 99; //set value to count up to
 
 	TIM14->DIER |= TIM_DIER_UIE; // enable update interrupt event
+	TIM14->CR1  |= TIM_CR1_ARPE;
 	TIM14->CR1 |= TIM_CR1_CEN; //start timer
 
-	NVIC_SetPriority(TIM14_IRQn, 2);
+	NVIC_SetPriority(TIM14_IRQn, 1);
 	NVIC_EnableIRQ(TIM14_IRQn);
 
 }
@@ -207,6 +231,8 @@ void init_TIM17(void){
 
 
 }
+
+
 
 void init_UART1(void){
 	/*initilaise UART1
@@ -300,9 +326,15 @@ void calibrate(void){
 	while(!isCalibrated){
 
 	}
+	int now = microseconds;
+	TIM14->CR1 &= ~TIM_CR1_CEN;
+	while(microseconds-now<100000){
+
+	}
+	TIM14->CR1 |= TIM_CR1_CEN;
 }
 
-void update_motor_control(unsigned int steps){
+void update_motor_control(uint16_t steps){
 /*change freq and direction according to current position away from target_angle
  * will try and make current_steps==target_steps
  * target_steps is updated in the uart reading interrupt
@@ -310,31 +342,31 @@ void update_motor_control(unsigned int steps){
 
 	//set frequency
 	//note: freq = 48000000/psc/arr psc=999+1
-	unsigned int error = abs(target_steps-steps);
-	unsigned int arr;
-	if(error<1){
-		arr = 9599; //50 Hz
+	uint16_t target_local = target_steps;
+	uint16_t error = abs(target_local-steps);
+	uint32_t arr;
+	if(error<=1){
+		arr = 1999;//9599; //50 Hz
 	}
 	else{
 		if(error>134){ //20 degrees: fastest
-			arr = 59;//47;//479; //100 hz	//@TODO: tune eqn, INVESTIGATE FREQ 1KHZ?
+			arr = 29;//47;//479; //1600 hz = 4rad/s	//@TODO: tune eqn, INVESTIGATE FREQ 1KHZ?
 		}
 		else{
-			arr = (int)(6400/error) - 1; //@TODO: tune eqn
+			arr = (uint16_t)(4000/error) - 1; //@TODO: tune eqn
 		}
 	}
 	TIM14->ARR = arr; //set value to count up to
 
-	//set direction @TODO: direction is opposite
+	//set direction
 	if(steps<target_steps){
 		dir = 0;
-		//GPIOB->ODR |= GPIO_ODR_1;
-		GPIOB->ODR &= ~GPIO_ODR_1;
+		GPIOB->ODR &= ~GPIO_ODR_1; //set direction pin
 	}
 	else{
 		dir = 1;
-		GPIOB->ODR |= GPIO_ODR_1;
-		//GPIOB->ODR &= ~GPIO_ODR_1;
+		GPIOB->ODR |= GPIO_ODR_1; //set direction pin
+
 	}
 
 }
@@ -352,26 +384,26 @@ void update_target_steps(uint16_t x_center){
 
 		if(x_error<50){ //small error
 			if(x_center>dead_center){
-				target = steps + 2.5*x_error; //@TODO: tune eqn
+				target = steps + 1.5*x_error; //@TODO: tune eqn
 			}
 			else{
-				target = steps - 2.5*x_error; //@TODO: tune eqn
+				target = steps - 1.5*x_error; //@TODO: tune eqn
 			}
 		}
 		else{ //large error
 			if(x_center>dead_center){
-				target = steps + 2*x_error; //@TODO: tune eqn
+				target = steps + 2.2*x_error; //@TODO: tune eqn
 			}
 			else{
-				target = steps - 2*x_error; //@TODO: tune eqn
+				target = steps - 2.2*x_error; //@TODO: tune eqn
 			}
 		}
 
 		//check target is within bounds
-		if(target<1200 && target>0){
+		if(target<1200 && target>=0){
 			target_steps = target;
 		}//else invalid target @TODO: see if valid target
-		/*else{
+		else{
 			if(target>32000){ //underflow
 				target = 0;
 				target_steps = target;
@@ -380,10 +412,21 @@ void update_target_steps(uint16_t x_center){
 				target = 1200;
 				target_steps = target;
 			}
-		}*/
+		}
 
 		new_x_center_flag = 0;
 	}
+}
+
+
+void reset_time(void){
+	TIM16->CR1 &= ~TIM_CR1_CEN;// disable the timekeeping timer
+	microseconds = 0;
+	TIM16->CR1 |= TIM_CR1_CEN; //restart the time
+	//@TODO beep here
+	GPIOB->ODR |= GPIO_ODR_2;//beep pin
+	TIM17->CR1 |= TIM_CR1_CEN; // start tim17 which will beep for 1 period (0.5s) then disable itself and the beep
+
 }
 
 
@@ -393,9 +436,11 @@ void TIM14_IRQHandler(void){
 	status = !status;
 
 	if(status){
-		if(dir && current_steps>0){
-			current_steps--;
-			GPIOB->ODR |= GPIO_ODR_0; //set PB0 high
+		if(dir){
+			if(current_steps>0){
+				current_steps--;
+				GPIOB->ODR |= GPIO_ODR_0; //set PB0 high
+			}
 		}
 		else{
 			current_steps++;
@@ -419,6 +464,12 @@ void TIM15_IRQHandler(){
  * we must create data packet of 6 bytes to be sent via uart to jetson using dma
  * current_steps(2) | microseconds(4)
  **/
+
+	if(time_calibrate_flag){ //time reset has been requested by user pressing SW0
+		reset_time();
+		time_calibrate_flag = 0;
+	}
+
 	//create packet and load into dma buffer
 	union{
 		uint16_t s;
@@ -469,38 +520,57 @@ void TIM17_IRQHandler(){
 	TIM17->SR &= ~TIM_SR_UIF;//clear the interrupt flag
 }
 
+void TIM3_IRQHandler(){
+	/* update the frequency of motor stepping*/
+
+	uint16_t steps = current_steps;
+	update_motor_control(steps);
+	TIM3->SR &= ~TIM_SR_UIF;//clear the interrupt flag
+}
+
+
 
 
 
 void EXTI0_1_IRQHandler(void){
+	uint32_t now = microseconds;
+	if((now-last_trigger_exti0_1)>100000){
+		if(EXTI->PR & EXTI_PR_PR0){ //SW0 has been pressed
+			//calibrate the angle to zero
+			if(!isCalibrated){
+				TIM14->CR1 &= ~TIM_CR1_CEN;
 
-	if(EXTI->PR & EXTI_PR_PR0){ //SW0 has been pressed
-		//calibrate the angle to zero
-		if(!isCalibrated){
-			TIM14->CR1 &= ~TIM_CR1_CEN;
+				current_steps = 0;
 
-			current_steps = 0;
+				isCalibrated = 1;
+				dir = 0;
+				TIM14->CR1 |= TIM_CR1_CEN;
+			}
 
-			isCalibrated = 1;
-			dir = 0;
-			TIM14->CR1 |= TIM_CR1_CEN;
+			EXTI->PR |= EXTI_PR_PR0; //clear the interrupt
 		}
+		//else{
 
-		EXTI->PR |= EXTI_PR_PR0; //clear the interrupt
+			if(EXTI->PR & EXTI_PR_PR1){ //SW1 has been pressed
+				time_calibrate_flag = 1;
+				EXTI->PR |= EXTI_PR_PR1; //clear the interrupt
+			}
+		//}
+
 	}
-	//else{
+	last_trigger_exti0_1 = now;
+	EXTI->PR |= EXTI_PR_PR0 | EXTI_PR_PR1;//clear both interrrupts
+}
 
-		if(EXTI->PR & EXTI_PR_PR1){ //SW1 has been pressed
-			TIM16->CR1 &= ~TIM_CR1_CEN;// disable the timekeeping timer
-			microseconds = 0;
-			TIM16->CR1 |= TIM_CR1_CEN; //restart the time
-			//@TODO beep here
-			GPIOB->ODR |= GPIO_ODR_2;//beep pin
-			TIM17->CR1 |= TIM_CR1_CEN; // start tim17 which will beep for 1 period (0.5s) then disable itself and the beep
-
-			EXTI->PR |= EXTI_PR_PR1; //clear the interrupt
-		}
-	//}
+void EXTI2_3_IRQHandler(void){
+	uint32_t now = microseconds;
+	if((now-last_trigger_exti2_3)>100000){
+		uint16_t target = target_steps;
+		target = target+100;
+		target_steps = target;
+	}
+	last_trigger_exti2_3 = now;
+	EXTI->PR |= EXTI_PR_PR2; //clear the interrupt
 }
 
 void USART1_IRQHandler(){

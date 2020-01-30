@@ -8,6 +8,7 @@
 #ifndef MOTION_TRACKING_H_
 #define MOTION_TRACKING_H_
 
+void init_TIM3(void);
 void init_TIM14(void);
 void init_TIM15(void);
 void init_TIM16(void);
@@ -19,9 +20,9 @@ void init_UART1(void);
 void init_DMA(void);
 
 void calibrate();
-void update_motor_control(unsigned int current_steps);
+void update_motor_control(uint16_t current_steps);
 void update_target_steps(uint16_t x_center);
-
+void reset_time(void);
 
 
 
