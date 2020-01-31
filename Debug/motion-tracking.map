@@ -1597,7 +1597,7 @@ END GROUP
                 0x0000000020001c00                __Main_Stack_Limit = (__stack - __Main_Stack_Size)
                 [!provide]                        PROVIDE (_Main_Stack_Limit, __Main_Stack_Limit)
                 0x0000000000000100                _Minimum_Stack_Size = 0x100
-                0x0000000020000068                PROVIDE (_Heap_Begin, _end_noinit)
+                0x000000002000006c                PROVIDE (_Heap_Begin, _end_noinit)
                 0x0000000020001c00                PROVIDE (_Heap_Limit, (__stack - __Main_Stack_Size))
 
 .isr_vector     0x0000000008000000      0x2a0
@@ -1663,16 +1663,16 @@ END GROUP
 
 .inits          0x00000000080002a0       0x28
                 0x00000000080002a0                __data_regions_array_start = .
-                0x00000000080002a0        0x4 LONG 0x8004378 LOADADDR (.data)
+                0x00000000080002a0        0x4 LONG 0x800431c LOADADDR (.data)
                 0x00000000080002a4        0x4 LONG 0x20000000 ADDR (.data)
-                0x00000000080002a8        0x4 LONG 0x20000038 (ADDR (.data) + SIZEOF (.data))
-                0x00000000080002ac        0x4 LONG 0x8004378 LOADADDR (.data_CCMRAM)
+                0x00000000080002a8        0x4 LONG 0x2000003c (ADDR (.data) + SIZEOF (.data))
+                0x00000000080002ac        0x4 LONG 0x800431c LOADADDR (.data_CCMRAM)
                 0x00000000080002b0        0x4 LONG 0x0 ADDR (.data_CCMRAM)
                 0x00000000080002b4        0x4 LONG 0x0 (ADDR (.data_CCMRAM) + SIZEOF (.data_CCMRAM))
                 0x00000000080002b8                __data_regions_array_end = .
                 0x00000000080002b8                __bss_regions_array_start = .
-                0x00000000080002b8        0x4 LONG 0x20000038 ADDR (.bss)
-                0x00000000080002bc        0x4 LONG 0x20000068 (ADDR (.bss) + SIZEOF (.bss))
+                0x00000000080002b8        0x4 LONG 0x2000003c ADDR (.bss)
+                0x00000000080002bc        0x4 LONG 0x2000006c (ADDR (.bss) + SIZEOF (.bss))
                 0x00000000080002c0        0x4 LONG 0x0 ADDR (.bss_CCMRAM)
                 0x00000000080002c4        0x4 LONG 0x0 (ADDR (.bss_CCMRAM) + SIZEOF (.bss_CCMRAM))
                 0x00000000080002c8                __bss_regions_array_end = .
@@ -1698,7 +1698,7 @@ END GROUP
 .flashtext
  *(.flashtext .flashtext.*)
 
-.text           0x00000000080002c8     0x40b0
+.text           0x00000000080002c8     0x4054
  *(.text .text.*)
  .text.DMA_DeInit
                 0x00000000080002c8      0x1f4 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
@@ -1809,132 +1809,132 @@ END GROUP
                 0x000000000800222c       0xc4 ./src/main.o
                 0x000000000800222c                update_motor_control
  .text.update_target_steps
-                0x00000000080022f0      0x1d8 ./src/main.o
+                0x00000000080022f0      0x178 ./src/main.o
                 0x00000000080022f0                update_target_steps
  .text.reset_time
-                0x00000000080024c8       0x60 ./src/main.o
-                0x00000000080024c8                reset_time
+                0x0000000008002468       0x60 ./src/main.o
+                0x0000000008002468                reset_time
  .text.TIM14_IRQHandler
-                0x0000000008002528       0xb8 ./src/main.o
-                0x0000000008002528                TIM14_IRQHandler
+                0x00000000080024c8       0xbc ./src/main.o
+                0x00000000080024c8                TIM14_IRQHandler
  .text.TIM15_IRQHandler
-                0x00000000080025e0       0xb8 ./src/main.o
-                0x00000000080025e0                TIM15_IRQHandler
+                0x0000000008002584       0xb8 ./src/main.o
+                0x0000000008002584                TIM15_IRQHandler
  .text.TIM16_IRQHandler
-                0x0000000008002698       0x2c ./src/main.o
-                0x0000000008002698                TIM16_IRQHandler
+                0x000000000800263c       0x2c ./src/main.o
+                0x000000000800263c                TIM16_IRQHandler
  .text.TIM17_IRQHandler
-                0x00000000080026c4       0x44 ./src/main.o
-                0x00000000080026c4                TIM17_IRQHandler
+                0x0000000008002668       0x44 ./src/main.o
+                0x0000000008002668                TIM17_IRQHandler
  .text.TIM3_IRQHandler
-                0x0000000008002708       0x38 ./src/main.o
-                0x0000000008002708                TIM3_IRQHandler
+                0x00000000080026ac       0x38 ./src/main.o
+                0x00000000080026ac                TIM3_IRQHandler
  .text.EXTI0_1_IRQHandler
-                0x0000000008002740       0xcc ./src/main.o
-                0x0000000008002740                EXTI0_1_IRQHandler
+                0x00000000080026e4       0xcc ./src/main.o
+                0x00000000080026e4                EXTI0_1_IRQHandler
  .text.EXTI2_3_IRQHandler
-                0x000000000800280c       0x64 ./src/main.o
-                0x000000000800280c                EXTI2_3_IRQHandler
+                0x00000000080027b0       0x64 ./src/main.o
+                0x00000000080027b0                EXTI2_3_IRQHandler
  .text.USART1_IRQHandler
-                0x0000000008002870       0x94 ./src/main.o
-                0x0000000008002870                USART1_IRQHandler
- .text          0x0000000008002904      0x114 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o)
-                0x0000000008002904                __udivsi3
-                0x0000000008002904                __aeabi_uidiv
-                0x0000000008002a10                __aeabi_uidivmod
- .text          0x0000000008002a18      0x1d4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_divsi3.o)
-                0x0000000008002a18                __aeabi_idiv
-                0x0000000008002a18                __divsi3
-                0x0000000008002be4                __aeabi_idivmod
- .text          0x0000000008002bec        0x4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
-                0x0000000008002bec                __aeabi_ldiv0
-                0x0000000008002bec                __aeabi_idiv0
- .text          0x0000000008002bf0       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
-                0x0000000008002bf0                __fixunsdfsi
-                0x0000000008002bf0                __aeabi_d2uiz
- .text          0x0000000008002c2c      0x638 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
-                0x0000000008002c2c                __aeabi_dadd
- .text          0x0000000008003264      0x4e4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
-                0x0000000008003264                __aeabi_dmul
- .text          0x0000000008003748      0x690 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
-                0x0000000008003748                __aeabi_dsub
- .text          0x0000000008003dd8       0x6c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
-                0x0000000008003dd8                __aeabi_d2iz
- .text          0x0000000008003e44       0x74 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
-                0x0000000008003e44                __aeabi_i2d
- .text          0x0000000008003eb8       0x64 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
-                0x0000000008003eb8                __aeabi_ui2d
- .text          0x0000000008003f1c       0x7c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o)
-                0x0000000008003f1c                __aeabi_cdrcmple
-                0x0000000008003f2c                __aeabi_cdcmple
-                0x0000000008003f2c                __aeabi_cdcmpeq
-                0x0000000008003f3c                __aeabi_dcmpeq
-                0x0000000008003f48                __aeabi_dcmplt
-                0x0000000008003f5c                __aeabi_dcmple
-                0x0000000008003f70                __aeabi_dcmpgt
-                0x0000000008003f84                __aeabi_dcmpge
- .text          0x0000000008003f98       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_clzsi2.o)
-                0x0000000008003f98                __clzsi2
- .text          0x0000000008003fd4       0x78 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
-                0x0000000008003fd4                __eqdf2
-                0x0000000008003fd4                __nedf2
- .text          0x000000000800404c       0xc8 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
-                0x000000000800404c                __gtdf2
-                0x000000000800404c                __gedf2
- .text          0x0000000008004114       0xd0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
-                0x0000000008004114                __ltdf2
-                0x0000000008004114                __ledf2
- .text.abs      0x00000000080041e4        0x8 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
-                0x00000000080041e4                abs
+                0x0000000008002814       0x94 ./src/main.o
+                0x0000000008002814                USART1_IRQHandler
+ .text          0x00000000080028a8      0x114 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_udivsi3.o)
+                0x00000000080028a8                __udivsi3
+                0x00000000080028a8                __aeabi_uidiv
+                0x00000000080029b4                __aeabi_uidivmod
+ .text          0x00000000080029bc      0x1d4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_divsi3.o)
+                0x00000000080029bc                __aeabi_idiv
+                0x00000000080029bc                __divsi3
+                0x0000000008002b88                __aeabi_idivmod
+ .text          0x0000000008002b90        0x4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_dvmd_tls.o)
+                0x0000000008002b90                __aeabi_ldiv0
+                0x0000000008002b90                __aeabi_idiv0
+ .text          0x0000000008002b94       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_fixunsdfsi.o)
+                0x0000000008002b94                __fixunsdfsi
+                0x0000000008002b94                __aeabi_d2uiz
+ .text          0x0000000008002bd0      0x638 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(adddf3.o)
+                0x0000000008002bd0                __aeabi_dadd
+ .text          0x0000000008003208      0x4e4 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+                0x0000000008003208                __aeabi_dmul
+ .text          0x00000000080036ec      0x690 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(subdf3.o)
+                0x00000000080036ec                __aeabi_dsub
+ .text          0x0000000008003d7c       0x6c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(fixdfsi.o)
+                0x0000000008003d7c                __aeabi_d2iz
+ .text          0x0000000008003de8       0x74 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatsidf.o)
+                0x0000000008003de8                __aeabi_i2d
+ .text          0x0000000008003e5c       0x64 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(floatunsidf.o)
+                0x0000000008003e5c                __aeabi_ui2d
+ .text          0x0000000008003ec0       0x7c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_arm_cmpdf2.o)
+                0x0000000008003ec0                __aeabi_cdrcmple
+                0x0000000008003ed0                __aeabi_cdcmple
+                0x0000000008003ed0                __aeabi_cdcmpeq
+                0x0000000008003ee0                __aeabi_dcmpeq
+                0x0000000008003eec                __aeabi_dcmplt
+                0x0000000008003f00                __aeabi_dcmple
+                0x0000000008003f14                __aeabi_dcmpgt
+                0x0000000008003f28                __aeabi_dcmpge
+ .text          0x0000000008003f3c       0x3c /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(_clzsi2.o)
+                0x0000000008003f3c                __clzsi2
+ .text          0x0000000008003f78       0x78 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(eqdf2.o)
+                0x0000000008003f78                __eqdf2
+                0x0000000008003f78                __nedf2
+ .text          0x0000000008003ff0       0xc8 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(gedf2.o)
+                0x0000000008003ff0                __gtdf2
+                0x0000000008003ff0                __gedf2
+ .text          0x00000000080040b8       0xd0 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(ledf2.o)
+                0x00000000080040b8                __ltdf2
+                0x00000000080040b8                __ledf2
+ .text.abs      0x0000000008004188        0x8 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-abs.o)
+                0x0000000008004188                abs
  *(.rodata .rodata.* .constdata .constdata.*)
- .rodata        0x00000000080041ec       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
- .rodata        0x000000000800421c       0x31 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
- *fill*         0x000000000800424d        0x3 
- .rodata        0x0000000008004250       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_rcc.o
- .rodata        0x0000000008004280       0x32 ./system/src/stm32f0-stdperiph/stm32f0xx_usart.o
- *fill*         0x00000000080042b2        0x2 
- .rodata        0x00000000080042b4       0x14 ./system/src/newlib/_exit.o
- .rodata        0x00000000080042c8       0x6f ./system/src/newlib/assert.o
- *fill*         0x0000000008004337        0x1 
- .rodata        0x0000000008004338       0x40 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
+ .rodata        0x0000000008004190       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
+ .rodata        0x00000000080041c0       0x31 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
+ *fill*         0x00000000080041f1        0x3 
+ .rodata        0x00000000080041f4       0x30 ./system/src/stm32f0-stdperiph/stm32f0xx_rcc.o
+ .rodata        0x0000000008004224       0x32 ./system/src/stm32f0-stdperiph/stm32f0xx_usart.o
+ *fill*         0x0000000008004256        0x2 
+ .rodata        0x0000000008004258       0x14 ./system/src/newlib/_exit.o
+ .rodata        0x000000000800426c       0x6f ./system/src/newlib/assert.o
+ *fill*         0x00000000080042db        0x1 
+ .rodata        0x00000000080042dc       0x40 /opt/gcc-arm/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m/libgcc.a(muldf3.o)
  *(vtable)
  *(.eh_frame*)
  *(.glue_7)
- .glue_7        0x0000000008004378        0x0 linker stubs
+ .glue_7        0x000000000800431c        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x0000000008004378        0x0 linker stubs
+ .glue_7t       0x000000000800431c        0x0 linker stubs
 
-.vfp11_veneer   0x0000000008004378        0x0
- .vfp11_veneer  0x0000000008004378        0x0 linker stubs
+.vfp11_veneer   0x000000000800431c        0x0
+ .vfp11_veneer  0x000000000800431c        0x0 linker stubs
 
-.v4_bx          0x0000000008004378        0x0
- .v4_bx         0x0000000008004378        0x0 linker stubs
+.v4_bx          0x000000000800431c        0x0
+ .v4_bx         0x000000000800431c        0x0 linker stubs
 
-.iplt           0x0000000008004378        0x0
- .iplt          0x0000000008004378        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
+.iplt           0x000000000800431c        0x0
+ .iplt          0x000000000800431c        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
 
-.rel.dyn        0x0000000008004378        0x0
- .rel.iplt      0x0000000008004378        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
+.rel.dyn        0x000000000800431c        0x0
+ .rel.iplt      0x000000000800431c        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x0000000008004378                . = ALIGN (0x4)
-                0x0000000008004378                __exidx_start = .
+                0x000000000800431c                . = ALIGN (0x4)
+                0x000000000800431c                __exidx_start = .
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x0000000008004378                __exidx_end = .
-                0x0000000008004378                . = ALIGN (0x4)
-                0x0000000008004378                _etext = .
-                0x0000000008004378                __etext = .
+                0x000000000800431c                __exidx_end = .
+                0x000000000800431c                . = ALIGN (0x4)
+                0x000000000800431c                _etext = .
+                0x000000000800431c                __etext = .
 
-.data_CCMRAM    0x0000000000000000        0x0 load address 0x0000000008004378
+.data_CCMRAM    0x0000000000000000        0x0 load address 0x000000000800431c
  FILL mask 0xff
  *(.data.CCMRAM .data.CCMRAM.*)
                 0x0000000000000000                . = ALIGN (0x4)
-                0x0000000008004378                _sidata = LOADADDR (.data)
+                0x000000000800431c                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x38 load address 0x0000000008004378
+.data           0x0000000020000000       0x3c load address 0x000000000800431c
  FILL mask 0xff
                 0x0000000020000000                _sdata = .
                 0x0000000020000000                __data_start__ = .
@@ -1951,83 +1951,85 @@ END GROUP
  .data.AHBPrescTable
                 0x0000000020000020       0x10 ./system/src/cmsis/system_stm32f0xx.o
                 0x0000000020000020                AHBPrescTable
+ .data.dir      0x0000000020000030        0x1 ./src/main.o
+                0x0000000020000030                dir
+ *fill*         0x0000000020000031        0x1 ff
  .data.current_steps
-                0x0000000020000030        0x2 ./src/main.o
-                0x0000000020000030                current_steps
- .data.target_steps
                 0x0000000020000032        0x2 ./src/main.o
-                0x0000000020000032                target_steps
+                0x0000000020000032                current_steps
+ .data.target_steps
+                0x0000000020000034        0x2 ./src/main.o
+                0x0000000020000034                target_steps
  *(.data_end .data_end.*)
- .data_end      0x0000000020000034        0x4 ./system/src/newlib/_startup.o
-                0x0000000020000038                . = ALIGN (0x4)
-                0x0000000020000038                _edata = .
-                0x0000000020000038                __data_end__ = .
+ *fill*         0x0000000020000036        0x2 ff
+ .data_end      0x0000000020000038        0x4 ./system/src/newlib/_startup.o
+                0x000000002000003c                . = ALIGN (0x4)
+                0x000000002000003c                _edata = .
+                0x000000002000003c                __data_end__ = .
 
-.igot.plt       0x0000000020000038        0x0 load address 0x00000000080043b0
- .igot.plt      0x0000000020000038        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
+.igot.plt       0x000000002000003c        0x0 load address 0x0000000008004358
+ .igot.plt      0x000000002000003c        0x0 ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
 
 .bss_CCMRAM     0x0000000000000000        0x0
  *(.bss.CCMRAM .bss.CCMRAM.*)
 
-.bss            0x0000000020000038       0x30
-                0x0000000020000038                __bss_start__ = .
-                0x0000000020000038                _sbss = .
+.bss            0x000000002000003c       0x30
+                0x000000002000003c                __bss_start__ = .
+                0x000000002000003c                _sbss = .
  *(.bss_begin .bss_begin.*)
- .bss_begin     0x0000000020000038        0x4 ./system/src/newlib/_startup.o
+ .bss_begin     0x000000002000003c        0x4 ./system/src/newlib/_startup.o
  *(.bss .bss.*)
  .bss.name.4309
-                0x000000002000003c        0x1 ./system/src/newlib/_syscalls.o
- .bss.status    0x000000002000003d        0x1 ./src/main.o
-                0x000000002000003d                status
+                0x0000000020000040        0x1 ./system/src/newlib/_syscalls.o
+ .bss.status    0x0000000020000041        0x1 ./src/main.o
+                0x0000000020000041                status
  .bss.isCalibrated
-                0x000000002000003e        0x1 ./src/main.o
-                0x000000002000003e                isCalibrated
- .bss.dir       0x000000002000003f        0x1 ./src/main.o
-                0x000000002000003f                dir
+                0x0000000020000042        0x1 ./src/main.o
+                0x0000000020000042                isCalibrated
  .bss.input_buffer_index
-                0x0000000020000040        0x1 ./src/main.o
-                0x0000000020000040                input_buffer_index
+                0x0000000020000043        0x1 ./src/main.o
+                0x0000000020000043                input_buffer_index
  .bss.time_calibrate_flag
-                0x0000000020000041        0x1 ./src/main.o
-                0x0000000020000041                time_calibrate_flag
- *fill*         0x0000000020000042        0x2 
+                0x0000000020000044        0x1 ./src/main.o
+                0x0000000020000044                time_calibrate_flag
+ *fill*         0x0000000020000045        0x3 
  .bss.last_trigger_exti0_1
-                0x0000000020000044        0x4 ./src/main.o
-                0x0000000020000044                last_trigger_exti0_1
- .bss.last_trigger_exti2_3
                 0x0000000020000048        0x4 ./src/main.o
-                0x0000000020000048                last_trigger_exti2_3
+                0x0000000020000048                last_trigger_exti0_1
+ .bss.last_trigger_exti2_3
+                0x000000002000004c        0x4 ./src/main.o
+                0x000000002000004c                last_trigger_exti2_3
  *(COMMON)
- COMMON         0x000000002000004c       0x16 ./src/main.o
-                0x000000002000004c                microseconds
-                0x0000000020000050                SEND_BUFFER
-                0x0000000020000056                x_center
-                0x0000000020000058                DMA_BUFFER
-                0x000000002000005e                new_x_center_flag
-                0x0000000020000060                INPUT_BUFFER
+ COMMON         0x0000000020000050       0x16 ./src/main.o
+                0x0000000020000050                microseconds
+                0x0000000020000054                SEND_BUFFER
+                0x000000002000005a                x_center
+                0x000000002000005c                DMA_BUFFER
+                0x0000000020000062                new_x_center_flag
+                0x0000000020000064                INPUT_BUFFER
  *(.bss_end .bss_end.*)
- *fill*         0x0000000020000062        0x2 
- .bss_end       0x0000000020000064        0x4 ./system/src/newlib/_startup.o
-                0x0000000020000068                . = ALIGN (0x4)
-                0x0000000020000068                __bss_end__ = .
-                0x0000000020000068                _ebss = .
+ *fill*         0x0000000020000066        0x2 
+ .bss_end       0x0000000020000068        0x4 ./system/src/newlib/_startup.o
+                0x000000002000006c                . = ALIGN (0x4)
+                0x000000002000006c                __bss_end__ = .
+                0x000000002000006c                _ebss = .
 
 .noinit_CCMRAM
  *(.noinit.CCMRAM .noinit.CCMRAM.*)
 
-.noinit         0x0000000020000068        0x0
-                0x0000000020000068                _noinit = .
+.noinit         0x000000002000006c        0x0
+                0x000000002000006c                _noinit = .
  *(.noinit .noinit.*)
-                0x0000000020000068                . = ALIGN (0x4)
-                0x0000000020000068                _end_noinit = .
+                0x000000002000006c                . = ALIGN (0x4)
+                0x000000002000006c                _end_noinit = .
                 [!provide]                        PROVIDE (end, _end_noinit)
                 [!provide]                        PROVIDE (_end, _end_noinit)
                 [!provide]                        PROVIDE (__end, _end_noinit)
                 [!provide]                        PROVIDE (__end__, _end_noinit)
 
-._check_stack   0x0000000020000068      0x100
-                0x0000000020000168                . = (. + _Minimum_Stack_Size)
- *fill*         0x0000000020000068      0x100 
+._check_stack   0x000000002000006c      0x100
+                0x000000002000016c                . = (. + _Minimum_Stack_Size)
+ *fill*         0x000000002000006c      0x100 
 
 .b1text
  *(.b1text)
@@ -2226,7 +2228,7 @@ END GROUP
  .debug_abbrev  0x000000000000118c       0x9d ./system/src/cmsis/vectors_stm32f0xx.o
  .debug_abbrev  0x0000000000001229      0x369 ./src/main.o
 
-.debug_line     0x0000000000000000     0x4dd4
+.debug_line     0x0000000000000000     0x4dd1
  *(.debug_line)
  .debug_line    0x0000000000000000      0xbfc ./system/src/stm32f0-stdperiph/stm32f0xx_dma.o
  .debug_line    0x0000000000000bfc      0x3a8 ./system/src/stm32f0-stdperiph/stm32f0xx_misc.o
@@ -2240,7 +2242,7 @@ END GROUP
  .debug_line    0x0000000000003b67      0x5ef ./system/src/cortexm/exception_handlers.o
  .debug_line    0x0000000000004156      0x39e ./system/src/cmsis/system_stm32f0xx.o
  .debug_line    0x00000000000044f4       0xdc ./system/src/cmsis/vectors_stm32f0xx.o
- .debug_line    0x00000000000045d0      0x804 ./src/main.o
+ .debug_line    0x00000000000045d0      0x801 ./src/main.o
 
 .debug_frame    0x0000000000000000     0x1608
  *(.debug_frame)

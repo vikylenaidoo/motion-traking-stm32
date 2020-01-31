@@ -31,7 +31,7 @@ volatile uint32_t microseconds;
 
 volatile bool status = 0; //used to keep step status
 volatile bool isCalibrated = 0;
-bool dir = 0;
+volatile bool dir = 1;
 
 volatile uint16_t current_steps = 1200;
 volatile uint16_t target_steps = 300; //max: 1200 current_steps == 180*
@@ -346,7 +346,7 @@ void update_motor_control(uint16_t steps){
 	uint16_t error = abs(target_local-steps);
 	uint32_t arr;
 	if(error<=1){
-		arr = 1999;//9599; //50 Hz
+		arr = 1999;//9599; //24 Hz
 	}
 	else{
 		if(error>134){ //20 degrees: fastest
@@ -392,10 +392,10 @@ void update_target_steps(uint16_t x_center){
 		}
 		else{ //large error
 			if(x_center>dead_center){
-				target = steps + 2.2*x_error; //@TODO: tune eqn
+				target = steps + 2*x_error; //@TODO: tune eqn
 			}
 			else{
-				target = steps - 2.2*x_error; //@TODO: tune eqn
+				target = steps - 2*x_error; //@TODO: tune eqn
 			}
 		}
 
